@@ -1,0 +1,32 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyc
+
+# Database
+db.sqlite3
+
+# Static files collected by collectstatic
+/staticfiles/
+
+# Environment variables
+/.env
+
+# VS Code settings
+.vscode/
+
+# Python egg info
+*.egg-info/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Distribution / packaging
+dist/
+build/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
