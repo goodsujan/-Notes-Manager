@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Notes Manager</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'notes/css/styles.css' %}">
+</head>
+<body>
+  <nav>
+    <a href="{% url 'notes:list' %}">Notes</a>
+    <a href="{% url 'notes:create' %}">New Note</a>
+  </nav>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  <script src="{% static 'notes/js/confirm.js' %}"></script>
+  <script src="{% static 'notes/js/unsaved.js' %}"></script>
+</body>
+</html>
