@@ -22,3 +22,7 @@ def note_list(request):
     page = request.GET.get('page')
     notes = paginator.get_page(page)
     return render(request, 'notes/list.html', {'notes': notes, 'q': q, 'tag': tag})
+
+def note_detail(request, pk):
+    note = get_object_or_404(Note, pk=pk)
+    return render(request, 'notes/detail.html', {'note': note})

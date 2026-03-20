@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mb-4 d-flex justify-content-between align-items-center">
+  <a href="{% url 'notes:list' %}" class="btn btn-outline-secondary btn-sm">&larr; Back to Notes</a>
+  <div class="d-flex gap-2">
+    <a href="{% url 'notes:edit' note.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+    <form action="{% url 'notes:delete' note.pk %}" method="post" class="d-inline">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-sm btn-outline-danger"
+        onclick="return confirm('Delete this note?')">Delete</button>
+    </form>
+  </div>
+</div>
+
+<div class="card shadow-sm" style="border-top: 4px solid {{ note.color }};">
+  <div class="card-body">
+
+    <h1 class="card-title mb-1">{{ note.title }}</h1>
+
+    {% if note.tag %}
+      <span class="badge bg-secondary mb-3">{{ note.tag }}</span>
+    {% endif %}
+
+    <hr>
+
+    <div class="card-text mb-4" style="white-space: pre-wrap;">{{ note.content }}</div>
+
+  </div>
+  <div class="card-footer text-muted d-flex justify-content-between" style="font-size: 0.85rem;">
+    <span><strong>Created:</strong> {{ note.created_at|date:"N j, Y, g:i a" }}</span>
+    <span><strong>Last updated:</strong> {{ note.updated_at|date:"N j, Y, g:i a" }}</span>
+  </div>
+</div>
+{% endblock %}
