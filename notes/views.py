@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.http import require_POST
 from .models import Note
 from .forms import NoteForm
 from django.core.paginator import Paginator
@@ -34,3 +35,9 @@ def note_edit(request, pk):
         form.save()
         return redirect('notes:detail', pk=note.pk)
     return render(request, 'notes/edit.html', {'form': form, 'note': note})
+
+@require_POST
+def note_delete(request, pk):
+    note = get_object_or_404(Note, pk=pk)
+    note.delete()
+    return redirect('notes:list')

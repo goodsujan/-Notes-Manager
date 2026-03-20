@@ -7,8 +7,7 @@
     <a href="{% url 'notes:edit' note.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
     <form action="{% url 'notes:delete' note.pk %}" method="post" class="d-inline">
       {% csrf_token %}
-      <button type="submit" class="btn btn-sm btn-outline-danger"
-        onclick="return confirm('Delete this note?')">Delete</button>
+      <button type="submit" class="btn btn-sm btn-outline-danger confirm-delete">Delete</button>
     </form>
   </div>
 </div>
