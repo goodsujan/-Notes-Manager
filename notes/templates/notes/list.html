@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>My Notes</h1>
+  <a href="{% url 'notes:create' %}" class="btn btn-primary">+ New Note</a>
+</div>
+
+<!-- Search Form -->
+<form method="get" class="mb-4 d-flex gap-2">
+  <input type="search" name="q" class="form-control" placeholder="Search notes..." value="{{ q|default_if_none:'' }}">
+  <button type="submit" class="btn btn-secondary">Search</button>
+  {% if q or tag %}
+  <a href="{% url 'notes:list' %}" class="btn btn-secondary">Clear</a>
+  {% endif %}
+</form>
+
+{% if tag %}
+<div class="alert alert-info">
+  Showing notes tagged with <strong>{{ tag }}</strong>
+</div>
+{% endif %}
+
+<!-- Notes Grid -->
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+  {% for note in notes %}
+  <div class="col">
+    <div class="card h-100 shadow-sm" style="border-top: 4px solid {{ note.color }};">
+      <div class="card-body">
+        <h5 class="card-title">
+          <a href="{% url 'notes:detail' note.pk %}" class="text-decoration-none text-body">{{ note.title }}</a>
+        </h5>
+        <h6 class="card-subtitle mb-2 text-muted" style="font-size: 0.8rem;">
+          {{ note.updated_at|date:"M d, Y" }}
+          {% if note.tag %}
+          &bull; <a href="?tag={{ note.tag|urlencode }}" class="badge bg-secondary text-decoration-none">{{ note.tag
+            }}</a>
+          {% endif %}
+        </h6>
+        <p class="card-text text-truncate">{{ note.content }}</p>
+      </div>
+      <div class="card-footer bg-transparent border-top-0 d-flex justify-content-end gap-2">
+        <a href="{% url 'notes:edit' note.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+        <form action="{% url 'notes:delete' note.pk %}" method="post" class="d-inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm="Delete this note?">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div class="alert alert-light text-center border">
+      No notes found. <a href="{% url 'notes:create' %}">Create one!</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if notes.has_other_pages %}
+<nav aria-label="Page navigation" class="mt-4">
+  <ul class="pagination justify-content-center">
+    {% if notes.has_previous %}
+    <li class="page-item">
+      <a class="page-link"
+        href="?page={{ notes.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}">&laquo;</a>
+    </li>
+    {% else %}
+    <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+    {% endif %}
+
+    {% for num in notes.paginator.page_range %}
+    {% if notes.number == num %}
+    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+    {% else %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}">{{
+        num }}</a>
+    </li>
+    {% endif %}
+    {% endfor %}
+
+    {% if notes.has_next %}
+    <li class="page-item">
+      <a class="page-link"
+        href="?page={{ notes.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}">&raquo;</a>
+    </li>
+    {% else %}
+    <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}
