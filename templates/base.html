@@ -2,19 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Notes Manager</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Notes Manager — create, search, and organise your notes.">
+  <title>{% block title %}Notes Manager{% endblock %}</title>
+
+  <!-- Bootstrap 5 CSS (CDN) -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+    crossorigin="anonymous">
+
+  <!-- Custom styles -->
   {% load static %}
   <link rel="stylesheet" href="{% static 'notes/css/styles.css' %}">
 </head>
 <body>
-  <nav>
-    <a href="{% url 'notes:list' %}">Notes</a>
-    <a href="{% url 'notes:create' %}">New Note</a>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="{% url 'notes:list' %}">📝 Notes Manager</a>
+
+      <button class="navbar-toggler" type="button"
+              data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+              aria-controls="mainNavbar" aria-expanded="false"
+              aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav ms-auto gap-1">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'notes:list' %}">All Notes</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link btn btn-primary btn-sm text-white px-3 ms-1"
+               href="{% url 'notes:create' %}">+ New Note</a>
+          </li>
+        </ul>
+      </div>
+    </div>
   </nav>
-  <main>
+
+  <!-- Main content -->
+  <main class="container py-4">
     {% block content %}{% endblock %}
   </main>
+
+  <!-- Bootstrap 5 JS bundle (CDN) -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc4s9bIOgUxi8T/jzmW7MRtEDCx/1GIHoKJSe6X1HIM"
+    crossorigin="anonymous"></script>
+
+  <!-- Custom scripts -->
   <script src="{% static 'notes/js/confirm.js' %}"></script>
   <script src="{% static 'notes/js/unsaved.js' %}"></script>
 </body>
