@@ -1,15 +1,93 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block title %}Create Note{% endblock %}
 
 {% block content %}
-  <h1>Create Note</h1>
-  <div class="card">
-    <form method="post">
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="h3 fw-bold mb-0">New Note</h1>
+  <a href="{% url 'notes:list' %}" class="btn btn-outline-secondary btn-sm">&larr; All Notes</a>
+</div>
+
+<div class="card shadow-sm" id="form-preview-card" style="border-top: 4px solid #f9f9f9;">
+  <div class="card-body">
+    <form method="post" id="note-form">
       {% csrf_token %}
-      {{ form.as_p }}
-      <div style="margin-top: 1.5rem;">
+
+      <!-- Title -->
+      <div class="mb-3">
+        <label for="{{ form.title.id_for_label }}" class="form-label fw-semibold">Title</label>
+        <input type="text" name="title" id="{{ form.title.id_for_label }}"
+               class="form-control {% if form.title.errors %}is-invalid{% endif %}"
+               value="{{ form.title.value|default:'' }}" placeholder="Note title…" required>
+        {% for err in form.title.errors %}
+          <div class="invalid-feedback">{{ err }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Content -->
+      <div class="mb-3">
+        <label for="{{ form.content.id_for_label }}" class="form-label fw-semibold">Content</label>
+        <textarea name="content" id="{{ form.content.id_for_label }}"
+                  class="form-control {% if form.content.errors %}is-invalid{% endif %}"
+                  rows="6" placeholder="Write your note…">{{ form.content.value|default:'' }}</textarea>
+        {% for err in form.content.errors %}
+          <div class="invalid-feedback">{{ err }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Tag -->
+      <div class="mb-3">
+        <label for="{{ form.tag.id_for_label }}" class="form-label fw-semibold">Tag <span class="text-muted fw-normal">(optional)</span></label>
+        <input type="text" name="tag" id="{{ form.tag.id_for_label }}"
+               class="form-control {% if form.tag.errors %}is-invalid{% endif %}"
+               value="{{ form.tag.value|default:'' }}" placeholder="e.g. work, ideas…">
+        {% for err in form.tag.errors %}
+          <div class="invalid-feedback">{{ err }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Color picker + live preview -->
+      <div class="mb-4">
+        <label for="color-picker" class="form-label fw-semibold">Card colour</label>
+        <div class="d-flex align-items-center gap-3">
+          <input type="color" name="color" id="color-picker"
+                 class="form-control form-control-color"
+                 value="{{ form.color.value|default:'#f9f9f9' }}"
+                 title="Pick a card colour">
+
+          <!-- Live preview swatch -->
+          <div id="color-preview"
+               class="rounded d-flex align-items-center justify-content-center"
+               style="width:120px; height:38px; border: 3px solid #f9f9f9;
+                      background:#f9f9f9; transition: background 0.2s, border-color 0.2s;">
+            <span class="preview-label" style="font-size:0.75rem; font-weight:600;
+                  mix-blend-mode:difference; color:#fff;">#F9F9F9</span>
+          </div>
+          <span class="text-muted" style="font-size:0.8rem;">Top border &amp; badge colour</span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="d-flex gap-2">
         <button type="submit" class="btn btn-primary">Save Note</button>
         <a href="{% url 'notes:list' %}" class="btn btn-secondary">Cancel</a>
       </div>
     </form>
   </div>
+</div>
+
+<!-- Update the card border live too -->
+<script src="{% static 'notes/js/color_preview.js' %}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const picker = document.getElementById('color-picker');
+    const card   = document.getElementById('form-preview-card');
+    if (picker && card) {
+      function syncBorder(hex) { card.style.borderTopColor = hex; }
+      syncBorder(picker.value);
+      picker.addEventListener('input', function () { syncBorder(this.value); });
+    }
+  });
+</script>
 {% endblock %}
