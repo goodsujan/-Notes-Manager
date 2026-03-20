@@ -26,3 +26,11 @@ def note_list(request):
 def note_detail(request, pk):
     note = get_object_or_404(Note, pk=pk)
     return render(request, 'notes/detail.html', {'note': note})
+
+def note_edit(request, pk):
+    note = get_object_or_404(Note, pk=pk)
+    form = NoteForm(request.POST or None, instance=note)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        return redirect('notes:detail', pk=note.pk)
+    return render(request, 'notes/edit.html', {'form': form, 'note': note})
