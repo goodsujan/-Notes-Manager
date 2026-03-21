@@ -51,10 +51,10 @@
         <div class="mt-2 d-flex flex-wrap gap-2" id="tag-chips">
           {% for t in popular_tags %}
           <button type="button"
-                  class="badge border-0 tag-chip {% if t.tag == note.tag %}ring-active{% endif %}"
-                  style="background-color: {{ t.color }}; color: #fff; cursor: pointer;
+                  class="badge border-0 tag-chip badge-contrast {% if t.tag == note.tag %}ring-active{% endif %}"
+                  style="background-color: {{ t.color }}; cursor: pointer;
                          padding: 0.35em 0.7em; font-size: 0.8rem;
-                         {% if t.tag == note.tag %}outline: 2px solid #000; outline-offset: 2px;{% endif %}"
+                         {% if t.tag == note.tag %}outline: 2px solid #fff; outline-offset: 2px;{% endif %}"
                   data-tag="{{ t.tag }}"
                   data-color="{{ t.color }}"
                   title="Use tag '{{ t.tag }}'">

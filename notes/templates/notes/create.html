@@ -51,8 +51,8 @@
         <div class="mt-2 d-flex flex-wrap gap-2" id="tag-chips">
           {% for t in popular_tags %}
           <button type="button"
-                  class="badge border-0 tag-chip"
-                  style="background-color: {{ t.color }}; color: #fff; cursor: pointer;
+                  class="badge border-0 tag-chip badge-contrast"
+                  style="background-color: {{ t.color }}; cursor: pointer;
                          padding: 0.35em 0.7em; font-size: 0.8rem;"
                   data-tag="{{ t.tag }}"
                   data-color="{{ t.color }}"
