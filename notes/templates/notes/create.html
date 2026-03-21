@@ -9,7 +9,7 @@
   <a href="{% url 'notes:list' %}" class="btn btn-outline-secondary btn-sm">&larr; All Notes</a>
 </div>
 
-<div class="card shadow-sm" id="form-preview-card" style="border-top: 4px solid #f9f9f9;">
+<div class="card shadow-sm color-border-target" id="form-preview-card" data-color="#f9f9f9">
   <div class="card-body">
     <form method="post" id="note-form">
       {% csrf_token %}
@@ -51,12 +51,11 @@
         <div class="mt-2 d-flex flex-wrap gap-2" id="tag-chips">
           {% for t in popular_tags %}
           <button type="button"
-                  class="badge border-0 tag-chip badge-contrast"
-                  style="background-color: {{ t.color }}; cursor: pointer;
-                         padding: 0.35em 0.7em; font-size: 0.8rem;"
-                  data-tag="{{ t.tag }}"
+                  class="badge border-0 tag-chip badge-contrast color-bg-target"
                   data-color="{{ t.color }}"
-                  title="Use tag '{{ t.tag }}'">
+                  data-tag="{{ t.tag }}"
+                  title="Use tag '{{ t.tag }}'"
+                  style="cursor: pointer; padding: 0.35em 0.7em; font-size: 0.8rem;">
             {{ t.tag }}
           </button>
           {% endfor %}
@@ -76,9 +75,9 @@
 
           <!-- Live preview swatch -->
           <div id="color-preview"
-               class="rounded d-flex align-items-center justify-content-center"
-               style="width:120px; height:38px; border: 3px solid #f9f9f9;
-                      background:#f9f9f9; transition: background 0.2s, border-color 0.2s;">
+               class="rounded d-flex align-items-center justify-content-center color-border-target color-bg-target"
+               data-color="#f9f9f9"
+               style="width:120px; height:38px; border: 3px solid transparent; transition: background 0.2s, border-color 0.2s;">
             <span class="preview-label" style="font-size:0.75rem; font-weight:600;
                   mix-blend-mode:difference; color:#fff;">#F9F9F9</span>
           </div>
@@ -104,7 +103,16 @@
     const tagInput = document.getElementById('{{ form.tag.id_for_label }}');
 
     // Sync card border with picker
-    function syncBorder(hex) { if (card) card.style.borderTopColor = hex; }
+    function syncBorder(hex) { 
+      if (card) card.style.borderTopColor = hex; 
+      const preview = document.getElementById('color-preview');
+      if (preview) {
+        preview.style.backgroundColor = hex;
+        preview.style.borderColor = hex;
+        const label = preview.querySelector('.preview-label');
+        if (label) label.textContent = hex.toUpperCase();
+      }
+    }
     if (picker) { syncBorder(picker.value); picker.addEventListener('input', function () { syncBorder(this.value); }); }
 
     // Tag chip clicks → fill tag field + color picker + preview

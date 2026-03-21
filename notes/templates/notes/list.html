@@ -33,7 +33,7 @@
 {% if tag %}
 <div class="alert alert-info d-flex align-items-center gap-2 mb-4" role="alert">
   <span>Filtering by tag:</span>
-  <span class="badge badge-contrast" style="background-color: {{ note.color|default:'#6c757d' }};">{{ tag }}</span>
+  <span class="badge badge-contrast color-bg-target" data-color="{{ note.color|default:'#6c757d' }}">{{ tag }}</span>
   <a href="{% url 'notes:list' %}" class="ms-auto btn btn-sm btn-outline-info">Remove filter</a>
 </div>
 {% endif %}
@@ -42,7 +42,7 @@
 <div class="notes-grid">
   {% for note in notes %}
   <div class="col">
-    <div class="card h-100 shadow-sm" style="border-top: 4px solid {{ note.color }};">
+    <div class="card h-100 shadow-sm color-border-target" data-color="{{ note.color }}">
 
       <div class="card-body">
         <!-- Title -->
@@ -56,8 +56,9 @@
           <span class="text-muted">{{ note.updated_at|date:"M j, Y" }}</span>
           {% if note.tag %}
             <a href="?tag={{ note.tag|urlencode }}"
-               class="badge badge-contrast text-decoration-none"
-               style="background-color: {{ note.color }}; position: relative; z-index: 1;">
+               class="badge badge-contrast text-decoration-none color-bg-target"
+               data-color="{{ note.color }}"
+               style="position: relative; z-index: 1;">
               {{ note.tag }}
             </a>
           {% endif %}

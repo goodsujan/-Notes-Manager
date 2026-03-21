@@ -9,7 +9,7 @@
   <a href="{% url 'notes:detail' note.pk %}" class="btn btn-outline-secondary btn-sm">&larr; Back to Note</a>
 </div>
 
-<div class="card shadow-sm" id="form-preview-card" style="border-top: 4px solid {{ note.color }};">
+<div class="card shadow-sm color-border-target" id="form-preview-card" data-color="{{ note.color }}">
   <div class="card-body">
     <form method="post" id="note-form">
       {% csrf_token %}
@@ -51,13 +51,11 @@
         <div class="mt-2 d-flex flex-wrap gap-2" id="tag-chips">
           {% for t in popular_tags %}
           <button type="button"
-                  class="badge border-0 tag-chip badge-contrast {% if t.tag == note.tag %}ring-active{% endif %}"
-                  style="background-color: {{ t.color }}; cursor: pointer;
-                         padding: 0.35em 0.7em; font-size: 0.8rem;
-                         {% if t.tag == note.tag %}outline: 2px solid #fff; outline-offset: 2px;{% endif %}"
-                  data-tag="{{ t.tag }}"
+                  class="badge border-0 tag-chip badge-contrast color-bg-target {% if t.tag == note.tag %}active-tag-outline{% endif %}"
                   data-color="{{ t.color }}"
-                  title="Use tag '{{ t.tag }}'">
+                  data-tag="{{ t.tag }}"
+                  title="Use tag '{{ t.tag }}'"
+                  style="cursor: pointer; padding: 0.35em 0.7em; font-size: 0.8rem;">
             {{ t.tag }}
           </button>
           {% endfor %}
@@ -77,9 +75,10 @@
 
           <!-- Live preview swatch -->
           <div id="color-preview"
-               class="rounded d-flex align-items-center justify-content-center"
-               style="width:120px; height:38px; border: 3px solid {{ note.color }};
-                      background:{{ note.color }}; transition: background 0.2s, border-color 0.2s;">
+               class="rounded d-flex align-items-center justify-content-center color-border-target color-bg-target"
+               data-color="{{ note.color }}"
+               style="width:120px; height:38px; border: 3px solid transparent;
+                      transition: background 0.2s, border-color 0.2s;">
             <span class="preview-label" style="font-size:0.75rem; font-weight:600;
                   mix-blend-mode:difference; color:#fff;">{{ note.color|upper }}</span>
           </div>
@@ -116,9 +115,8 @@
         if (tagInput) tagInput.value = tag;
         if (picker)   { picker.value = color; picker.dispatchEvent(new Event('input')); }
         // Highlight the selected chip, clear others
-        document.querySelectorAll('.tag-chip').forEach(c => c.style.outline = '');
-        this.style.outline = '2px solid #000';
-        this.style.outlineOffset = '2px';
+        document.querySelectorAll('.tag-chip').forEach(c => c.classList.remove('active-tag-outline'));
+        this.classList.add('active-tag-outline');
       });
     });
   });
