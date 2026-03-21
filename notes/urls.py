@@ -8,5 +8,6 @@ urlpatterns = [
     path('create/', views.note_create, name='create'),
     path('edit/<int:pk>/', views.note_edit, name='edit'),
     path('delete/<int:pk>/', views.note_delete, name='delete'),
+    path('export/csv/', views.export_notes_csv, name='export_csv'),
     path('<int:pk>/', views.note_detail, name='detail'),
 ]

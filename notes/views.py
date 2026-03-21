@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
+from django.http import HttpResponse
+import csv
 from .models import Note
 from .forms import NoteForm
 from django.core.paginator import Paginator
@@ -63,3 +65,13 @@ def note_delete(request, pk):
     note = get_object_or_404(Note, pk=pk)
     note.delete()
     return redirect('notes:list')
+
+def export_notes_csv(request):
+    notes = Note.objects.order_by('-updated_at')
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="notes_export.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['id','title','tag','color','created_at','updated_at','content'])
+    for n in notes:
+        writer.writerow([n.id, n.title, n.tag, n.color, n.created_at, n.updated_at, n.content])
+    return response
