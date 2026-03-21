@@ -5,29 +5,35 @@ import csv
 from .models import Note
 from .forms import NoteForm
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 
-def _popular_tags():
+def _popular_tags(user):
     """Return up to 20 distinct non-empty tags with their most recent color."""
     return (
         Note.objects
+        .filter(user=user)
         .exclude(tag='')
         .values('tag', 'color')
         .distinct()
         .order_by('-tag')[:20]
     )
 
+@login_required
 def note_create(request):
     form = NoteForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
-        form.save()
+        note = form.save(commit=False)
+        note.user = request.user
+        note.save()
         return redirect('notes:list')
     return render(request, 'notes/create.html', {
         'form': form,
-        'popular_tags': _popular_tags(),
+        'popular_tags': _popular_tags(request.user),
     })
 
+@login_required
 def note_list(request):
-    qs = Note.objects.order_by('-updated_at')
+    qs = Note.objects.filter(user=request.user).order_by('-updated_at')
     q = request.GET.get('q')
     tag = request.GET.get('tag')
     if q:
@@ -41,15 +47,17 @@ def note_list(request):
         'notes': notes,
         'q': q,
         'tag': tag,
-        'popular_tags': _popular_tags(),
+        'popular_tags': _popular_tags(request.user),
     })
 
+@login_required
 def note_detail(request, pk):
-    note = get_object_or_404(Note, pk=pk)
+    note = get_object_or_404(Note, pk=pk, user=request.user)
     return render(request, 'notes/detail.html', {'note': note})
 
+@login_required
 def note_edit(request, pk):
-    note = get_object_or_404(Note, pk=pk)
+    note = get_object_or_404(Note, pk=pk, user=request.user)
     form = NoteForm(request.POST or None, instance=note)
     if request.method == "POST" and form.is_valid():
         form.save()
@@ -57,17 +65,19 @@ def note_edit(request, pk):
     return render(request, 'notes/edit.html', {
         'form': form,
         'note': note,
-        'popular_tags': _popular_tags(),
+        'popular_tags': _popular_tags(request.user),
     })
 
+@login_required
 @require_POST
 def note_delete(request, pk):
-    note = get_object_or_404(Note, pk=pk)
+    note = get_object_or_404(Note, pk=pk, user=request.user)
     note.delete()
     return redirect('notes:list')
 
+@login_required
 def export_notes_csv(request):
-    notes = Note.objects.order_by('-updated_at')
+    notes = Note.objects.filter(user=request.user).order_by('-updated_at')
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="notes_export.csv"'
     writer = csv.writer(response)
