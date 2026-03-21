@@ -45,6 +45,24 @@
         {% for err in form.tag.errors %}
           <div class="invalid-feedback">{{ err }}</div>
         {% endfor %}
+
+        <!-- Popular tag chips -->
+        {% if popular_tags %}
+        <div class="mt-2 d-flex flex-wrap gap-2" id="tag-chips">
+          {% for t in popular_tags %}
+          <button type="button"
+                  class="badge border-0 tag-chip"
+                  style="background-color: {{ t.color }}; color: #fff; cursor: pointer;
+                         padding: 0.35em 0.7em; font-size: 0.8rem;"
+                  data-tag="{{ t.tag }}"
+                  data-color="{{ t.color }}"
+                  title="Use tag '{{ t.tag }}'">
+            {{ t.tag }}
+          </button>
+          {% endfor %}
+        </div>
+        <small class="text-muted">Click a chip to reuse an existing tag &amp; colour.</small>
+        {% endif %}
       </div>
 
       <!-- Color picker + live preview -->
@@ -81,13 +99,23 @@
 <script src="{% static 'notes/js/color_preview.js' %}"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const picker = document.getElementById('color-picker');
-    const card   = document.getElementById('form-preview-card');
-    if (picker && card) {
-      function syncBorder(hex) { card.style.borderTopColor = hex; }
-      syncBorder(picker.value);
-      picker.addEventListener('input', function () { syncBorder(this.value); });
-    }
+    const picker  = document.getElementById('color-picker');
+    const card    = document.getElementById('form-preview-card');
+    const tagInput = document.getElementById('{{ form.tag.id_for_label }}');
+
+    // Sync card border with picker
+    function syncBorder(hex) { if (card) card.style.borderTopColor = hex; }
+    if (picker) { syncBorder(picker.value); picker.addEventListener('input', function () { syncBorder(this.value); }); }
+
+    // Tag chip clicks → fill tag field + color picker + preview
+    document.querySelectorAll('.tag-chip').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        const tag   = this.dataset.tag;
+        const color = this.dataset.color;
+        if (tagInput) tagInput.value = tag;
+        if (picker)   { picker.value = color; picker.dispatchEvent(new Event('input')); }
+      });
+    });
   });
 </script>
 {% endblock %}

@@ -4,12 +4,25 @@ from .models import Note
 from .forms import NoteForm
 from django.core.paginator import Paginator
 
+def _popular_tags():
+    """Return up to 20 distinct non-empty tags with their most recent color."""
+    return (
+        Note.objects
+        .exclude(tag='')
+        .values('tag', 'color')
+        .distinct()
+        .order_by('-tag')[:20]
+    )
+
 def note_create(request):
     form = NoteForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         form.save()
         return redirect('notes:list')
-    return render(request, 'notes/create.html', {'form': form})
+    return render(request, 'notes/create.html', {
+        'form': form,
+        'popular_tags': _popular_tags(),
+    })
 
 def note_list(request):
     qs = Note.objects.order_by('-updated_at')
@@ -22,7 +35,12 @@ def note_list(request):
     paginator = Paginator(qs, 6)
     page = request.GET.get('page')
     notes = paginator.get_page(page)
-    return render(request, 'notes/list.html', {'notes': notes, 'q': q, 'tag': tag})
+    return render(request, 'notes/list.html', {
+        'notes': notes,
+        'q': q,
+        'tag': tag,
+        'popular_tags': _popular_tags(),
+    })
 
 def note_detail(request, pk):
     note = get_object_or_404(Note, pk=pk)
@@ -34,7 +52,11 @@ def note_edit(request, pk):
     if request.method == "POST" and form.is_valid():
         form.save()
         return redirect('notes:detail', pk=note.pk)
-    return render(request, 'notes/edit.html', {'form': form, 'note': note})
+    return render(request, 'notes/edit.html', {
+        'form': form,
+        'note': note,
+        'popular_tags': _popular_tags(),
+    })
 
 @require_POST
 def note_delete(request, pk):
