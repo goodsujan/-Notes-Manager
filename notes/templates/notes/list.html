@@ -118,12 +118,16 @@
         <li class="page-item active" aria-current="page">
           <span class="page-link">{{ num }}</span>
         </li>
-        {% else %}
+        {% elif num == 1 or num == notes.paginator.num_pages or num|add:2 >= notes.number and notes.number|add:'-2' <= num %}
         <li class="page-item">
           <a class="page-link"
              href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}">
             {{ num }}
           </a>
+        </li>
+        {% elif num == notes.number|add:'-3' or num == notes.number|add:'3' %}
+        <li class="page-item disabled">
+          <span class="page-link">&hellip;</span>
         </li>
         {% endif %}
       {% endfor %}
